@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html ng-app='BeersApp'>
+  <head>
+    <meta charset="utf-8">
+    <title>Beers on the Wall</title>
+    <!--Scripts-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+    <script src='/js/app.js'></script>
+    <script src="/js/rzslider.js"></script>
+    <!-- <script type="text/javascript" src="js/app_user_auth.js"></script> -->
+    <!--StyleSheets -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/rzslider.css"/>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style_user_auth.css">
+    <!-- <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
+<!--- fusion tables js -->
+<link rel="stylesheet" href="/css/map.css">
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDweS-VTCVLYj2nFiijNfp80U76XKfnUdY"
+  type="text/javascript"></script>
+  <script src="/js/map.js"></script>
+<!--- end fusion tables js -->
+    <!-- FAVICON -->
+    <link href="/images/favicon.ico" rel="icon" type="image/x-icon" />
+  </head>
+  <body ng-controller = 'MainController as main'>
+    <!-- HEADER -->
+
+
+    <header>
+      <h1 ng-click="main.decBeers()" id="title">{{main.numBeers}} Bottles of Beer on the Wall</h1>
+      <i ng-hide="main.todpia===true" class="fa fa-beer fa-5x" id="pourmug"><span id="question">?</span></i>
+    <h6 ng-show="main.todpia===true"id="todpia">Take One Down, Pass it Around!</h6>
+      <div id="modal">
+      <div id="modal-text-area">
+        <div id="modal-footer">
+          <h2 id="closeBtn">X</h2>
+        </div>
+        <h1 id="modal-header">How do I use this site?</h1>
+        <p>Discover recommendations of beer styles based on your preferences!</p><p>Use the sliders to set ranges for IBU, ABV and SRM to filter the list.  Click on a style for more information. &hearts; a style to save it to your profile.  Click on the Brewery information to find locations serving and making beer near you!</p>
+        <h1 id="modal-header">What do these terms mean?</h1>
+        <p><strong>IBU - </strong>International Bitterness Units scale is a gauge of beer's bitterness. What IBUs measure are the parts per million of isohumulone found in a beer. Isohumulone is the acid found in hops that gives beer its bitter bite.  Though the IBU scale can be used as a general guideline for taste, with lower IBUs corresponding to less bitterness and vice versa, it's important to note that malt and other flavors can mask the taste of bitterness in beer.</p>
+        <p>IBU are measured on a scale beginning at 0. There's no ceiling on the IBU scale. There are documented beers that have rated to over a 1000 IBU's, but it's rare to see anything nearly that high.</p>
+        <p>Almost all the beer you're ever going to drink will have an IBU rating between 5 and 120.</p>
+        <p><strong>ABV - </strong>Unlike hard liquor, beers aren't measured by proof, but most commonly by Alcohol By Volume. This number simply lets you know what percentage of your beer is alcohol. Brewers take samples of beer as it ferments to see how much sugar the yeast is converting into alcohol, and tweak the batch to get to the final level of booziness they're looking for.   Simply put, the higher the ABV, the more drunk you’ll get.</p>
+        <p>Beer is 2%–12% (usually 4%–6%).</p>
+        <p><strong>SRM - </strong>Standard Reference Method measures the color of the beer in your glass—the higher the number, the darker the beer. But color does not necessarily equal flavor: while it's easy to make overarching judgments and think that pale gold beers are light in flavor, amber beers are sweet and malty, and near-black beers are super roasty.  The range is defined from 0 - 40, from a pale lager at the lightest to an imperial stout at the darkest.  Dark colors past 25 are often indiscernable.</p>
+      </div>
+    </div>
+    </header>
+<!-- BODY OF SITE -->
+<main ng-controller="userController as userCtrl" class="container">
+    <!-- LOGIN AND REGISTRATION -->
+
+      <div id="container" class="col-sx-12">
+        <nav>
+        <section class="clsUsername col-xs-6">
+            <h6 ng-if="userCtrl.loggedIn && userCtrl.showProfile==false" ng-click="userCtrl.showProfile=true; userCtrl.showUpdate=false" id="userprofile"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>User Profile</h6>
+            <h6 ng-if="userCtrl.loggedIn && userCtrl.showProfile==true" ng-click="userCtrl.showProfile=false" id="userprofile"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Return</h6>
+            <!-- MAP SHOW AND HIDE BUTTONS -->
+            <h6 id="mapbtn" ng-click="main.showMap=true; main.showSearch = false" ng-show="!main.showMap && !userCtrl.showProfile"><span class="glyphicon glyphicon-map-marker"></span>View Map</h6>
+            <h6 id="mapbtn" ng-click="main.showMap=false; main.showSearch = true" ng-show="main.showMap && !userCtrl.showProfile"><span class="glyphicon glyphicon-search"></span>View Search</h6>
+            <!-- MAP SHOW AND HIDE BUTTONS END -->
+              <!-- <span ng-if="userCtrl.loggedIn" id="user-message"><h6>Welcome: {{ userCtrl.user.username }}</h6></span> -->
+              <span ng-if="!userCtrl.loggedIn" id="user-message"></span>
+        </section>
+        <section class="clsLoginLogout col-xs-6">
+              <span ng-if="!userCtrl.loggedIn" class="registerButton"
+              ng-click="userCtrl.showRegistration = !userCtrl.showRegistration; userCtrl.showLogin = false; userCtrl.loginError=false">
+                <h6 style="display:inline"><span class="glyphicon glyphicon-check" aria-hidden="true"></span>Register</h6>
+              </span><span ng-if="!userCtrl.loggedIn" class="registerButton"
+              ng-click="userCtrl.showLogin = !userCtrl.showLogin; userCtrl.showRegistration=false; userCtrl.loginError=false">
+                <h6 style="display:inline"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>Log In</h6>
+              </span>
+              <span ng-if="userCtrl.loggedIn" class="registerButton"
+              ng-click="userCtrl.logout()">
+                <h6><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>Log Out</h6>
+              </span>
+              <span ng-if="userCtrl.loggedIn && userCtrl.showProfile" class="registerButton"
+              ng-click="userCtrl.showUpdate = !userCtrl.showUpdate">
+                <h6><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Update Profile</h6>
+              </span>
+        </section>
+        </nav>
+        <!-- END NAV -->
+        <section class="clsRegister">
+            <div ng-if="userCtrl.showRegistration" id="registration-container">
+              <form class="form-inline" ng-submit="userCtrl.register()">
+                <h3>Register</h3>
+                <div class="form-group">
+                <label for="userCtrl.registerForm.username">Username</label><br/>
+                <input class="register-form-input" type="text" ng-model="userCtrl.registerForm.username" placeholder="required" required>
+              </div>
+                <div class="form-group">
+                <label for="userCtrl.registerForm.password">Password</label><br/>
+                <input class="register-form-input" type="password" ng-model="userCtrl.registerForm.password" placeholder="required" required>
+              </div>
+              <div class="form-group">
+                <label for="userCtrl.registerForm.passwordConfirm">Confirm Password</label><br/>
+                <input class="register-form-input" type="password" ng-model="userCtrl.registerForm.passwordConfirm" placeholder="required" required>
+              </div>
+                <div class="form-group">
+                  <label for="userCtrl.registerForm.state">State</label><br/>
+                <input class="register-form-input" type="text" ng-model="userCtrl.registerForm.state" placeholder="optional"/>
+              </div>
+              <div class="form-group">
+                <label for="userCtrl.registerForm.zipcode">Zip Code</label><br/>
+              <input class="register-form-input" type="text" ng-model="userCtrl.registerForm.zipcode" placeholder="optional"/>
+            </div><br/>
+                <div class="form-group">
+                <button class="register-form-button btn btn-default" type="submit">Register</button>
+              </div>
+            </div>
+              </form>
+          </section>
+      <section class="clsRegisterError">
+          <h4 class="register-error" ng-if="userCtrl.loginError">{{userCtrl.loginError}}</h4>
+      </section>
+      <section class="clsLogin">
+              <form ng-if="userCtrl.showLogin" class="form-inline" ng-submit="userCtrl.login()">
+                <br><h3>Log In</h3>
+                <div class="form-group">
+                  <label for="userCtrl.loginForm.username">Username</label><br/>
+                <input class="register-form-input" type="text" ng-model="userCtrl.loginForm.username" placeholder="required" required/>
+              </div>
+                <div class="form-group">
+                  <label for="userCtrl.loginForm.password">Password</label><br/>
+                <input class="register-form-input" type="password" ng-model="userCtrl.loginForm.password" placeholder="required" required/>
+              </div><br/>
+                <div class="form-group">
+                <button class="register-form-button btn btn-default" type="submit">Log In</button>
+              </div>
+              </form>
+        </section>
+        </div>
+        <!-- USER PROFILE ACCESS -->
+    <div id="userProfile" ng-if="userCtrl.showProfile==true">
+    <section class="clsRegister">
+        <div id="registration-container" ng-if="userCtrl.showUpdate">
+          <form class="form-inline" ng-submit="userCtrl.update(userCtrl.user)">
+            <h3>Update User Profile</h3>
+            <div class="form-group">
+            <label for="userCtrl.user.username">Username</label><br/>
+            <input class="register-form-input" type="text" ng-model="userCtrl.user.username" placeholder="required" required>
+          </div>
+            <div class="form-group">
+            <label for="userCtrl.user.password">Password</label><br/>
+            <input class="register-form-input" type="password" ng-model="userCtrl.user.newpassword" placeholder="required" required>
+          </div>
+          <div class="form-group">
+            <label for="userCtrl.user.passwordConfirm">Confirm Password</label><br/>
+            <input class="register-form-input" type="password" ng-model="userCtrl.user.passwordConfirm" placeholder="required" required>
+          </div>
+            <div class="form-group">
+              <label for="userCtrl.user.state">State</label><br/>
+            <input class="register-form-input" type="text" ng-model="userCtrl.user.state" placeholder="optional"/>
+          </div>
+          <div class="form-group">
+            <label for="userCtrl.user.zipcode">Zip Code</label><br/>
+          <input class="register-form-input" type="text" ng-model="userCtrl.user.zipcode" placeholder="optional"/>
+        </div><br/>
+            <div class="form-group">
+            <button class="register-form-button btn btn-default" type="submit">Update User</button>
+          </div>
+
+        </form>
+        <button id="openD" class="btn btn-danger">Delete User</button>
+
+        <div id="modalDelete">
+          <div id="modal-delete-text-area">
+            Are you sure you want to delete your account?</br>
+            <button ng-click="userCtrl.deleteUser(userCtrl.user._id)" class="btn btn-danger">Yes</button>
+            <button id="closeDelete" class="btn btn-success">No</button>
+          </div>
+          <p ng-if="main.getDeleteModal()"></p>
+        </div>
+        </div>
+      </section>
+      <br/>
+
+
+
+      <div ng-show="main.showBeerModal" id="modalBeer">
+        <div id="modal-beer-text-area">
+          <h2 ng-click="main.showBeerModal=false" id = "closeBtn">X</h2>
+          <h1 id="modal-header">{{main.selectedUserBeer.name}}</h1></br>
+          {{main.selectedUserBeer.description}}
+        </div>
+      </div>
+
+  <section id="thewall" style="background-color: {{main.getColor(userCtrl.getUserProfileColor(userCtrl.user))}};">
+    <h3 class="walltext" class="h3header">{{userCtrl.user.totalBeers}} Beers On The Wall</h3>
+    <br/>
+    <div id="favlist">
+      <div ng-repeat="beer in userCtrl.user.favoriteBeers" >
+          <ul >
+            <li class="favlistname">
+              <div class="favorite">
+                <img src="/images/pushpin.png"><br/>
+              <h4 id="userBeer" ng-click="main.getUserBeer(userCtrl.user, beer); main.showBeerModal=true">{{beer.name}}</h4>
+              <button ng-click="userCtrl.removeFavorite(beer); main.makeFalse()" id="favorite" class="fa fa-heart" aria-hidden="true"></button>
+              <div class="profilestats">
+                <strong>IBU:</strong> {{beer.ibuMin}} - {{beer.ibuMax}}</br>
+                <strong>ABV:</strong> {{beer.abvMin}} - {{beer.abvMax}}</br>
+                <strong>SRM:</strong> {{beer.srmMin}} - {{beer.srmMax}}</br>
+              </div>
+              </div>
+            </li>
+          </ul>
+      </div>
+    </div>
+
+  </section>
+    <br/>
+    </div>
+    <div ng-if="!userCtrl.showProfile && main.showSearch">
+  <!-- SLIDERS -->
+    <section class="sliders">
+      <div>
+        <h5>International Bitterness Units</h5>
+        <rzslider
+            rz-slider-model="ibuSlider.min"
+            rz-slider-high="ibuSlider.max"
+            rz-slider-options="ibuSlider.options"></rzslider>
+      </div>
+      <div>
+        <h5>Alcohol By Volume</h5>
+        <rzslider
+            rz-slider-model="abvSlider.min"
+            rz-slider-high="abvSlider.max"
+            rz-slider-options="abmSlider.options"></rzslider>
+      </div>
+      <!-- <div ng-style="{'background-color': main.getColor(srmSlider.min)}"> -->
+
+        <div id="srmSlider" ng-style="{'background-image':'-webkit-gradient(linear, left top, right top,   color-stop(0%,'+ main.getColor(srmSlider.min)+'), color-stop(50%, '+main.getMiddleColor(srmSlider.max, srmSlider.min)+'), color-stop(100%, '+main.getColor(srmSlider.max)+'))'}">
+
+
+        <h5>Standard Reference Method</h5>
+        <rzslider
+            rz-slider-model="srmSlider.min"
+            rz-slider-high="srmSlider.max"
+            rz-slider-options="srmSlider.options"></rzslider>
+      </div>
+    </section>
+    <section id="listandshow">
+      <!-- LIST OF STYLES -->
+      <div id="left">
+      </br>
+        <ul>
+          <li ng-click="main.getBeer(userCtrl.user, beers)" ng-repeat = "beers in main.beers | orderBy: 'name' | filter:byRange('ibuMin', 'ibuMax', 'abvMin', 'abvMax', 'srmMin', 'srmMax', ibuSlider.min, ibuSlider.max, abvSlider.min, abvSlider.max, srmSlider.min, srmSlider.max)">
+              {{beers.name}}
+              <!-- {{beers.ibuMin}} {{beers.ibuMax}}
+              {{beers.abvMin}} {{beers.abvMax}}
+              {{beers.srmMin}} {{beers.srmMax}} -->
+          </li>
+        </ul>
+      </div>
+      <!-- SHOW PAGE FOR STYLE -->
+      <div id="right">
+        <!-- <div ng-controller="userController as userCtrl"> -->
+        <div ng-if="main.selectedBeer!==undefined">
+        <h1 class="beername">{{main.selectedBeer.name}}</h1>
+        <button ng-if="userCtrl.loggedIn && !main.favorite" ng-click="userCtrl.addFavorite(main.selectedBeer); main.makeTrue()" id="favorite" class="fa fa-heart-o" aria-hidden="true"></button>
+        <button ng-if="userCtrl.loggedIn && main.favorite" ng-click="userCtrl.removeFavorite(main.selectedBeer); main.makeFalse()" id="favorite" class="fa fa-heart" aria-hidden="true"></button>
+        <p>{{main.selectedBeer.description}}</p></br>
+        <strong>IBU:</strong> {{main.selectedBeer.ibuMin}} - {{main.selectedBeer.ibuMax}}</br>
+        <strong>ABV:</strong> {{main.selectedBeer.abvMin}} - {{main.selectedBeer.abvMax}}</br>
+        <strong>SRM:</strong> {{main.selectedBeer.srmMin}} - {{main.selectedBeer.srmMax}}</br>
+        </div>
+        <!-- </div> -->
+      </div>
+    </section>
+  </div>
+
+  <section id="iframetag" ng-if="main.showMap && !main.showSearch && !userCtrl.showProfile" >
+    <h3 class="h3header">Brewery Locations</h3>
+    <p>Ratings are scored based on selection, atmosphere, service and food.</p>
+    <p>Data consists of breweires, brewpubs, beer bars and beer stores.</p>
+    <!-- MAP IFRAME -->
+    <iframe src="https://beerswall99.herokuapp.com/maps/map-overall-rating.html" scrolling="no" style=" width: 850px; height: 600px;  overflow: hidden;"></iframe>
+    <!-- MAP IFRAME -->
+
+  </section>
+
+</main>
+<footer class="footer navbar-fixed-bottom">
+  &#127866;
+</footer>
+  </body>
+</html>
